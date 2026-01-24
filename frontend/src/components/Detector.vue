@@ -6,7 +6,7 @@
             <form action="">
                 <div class="detector-form">
                     <label for="detector-box">Detector</label>
-                    <textarea name="detector" id="detector-box"></textarea>
+                    <textarea name="detector" id="detector-box" placeholder="type the text you wish to detect"></textarea>
                     <button class="detector-type">T</button>
                     <button type="submit" class="submit">Detect</button>
                 </div>
@@ -31,6 +31,8 @@ textarea {
     height: 500px;
     border-radius: 10px;
     border: 3px solid #726E5F;
+    padding: 10% 10px;
+    font-size: 16px;
 }
 label {
     position: absolute;
@@ -45,6 +47,9 @@ label {
     border-radius: 0 0 10px 10px;
     border: 3px solid #726E5F;
     font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 button {
@@ -69,5 +74,9 @@ button.submit:hover {
 button.detector-type {
     position: absolute;
     top: 0%;
+    right: 2%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius:0 0 5px 5px;
 }
 </style>
