@@ -1,14 +1,21 @@
-<script setup></script>
+<script setup>
+import HomeIcon from "./icons/HomeIcon.vue";
+import CoachIcon from "./icons/CoachIcon.vue";
+import DetectorIcon from "./icons/DetectorIcon.vue";
+import GameIcon from "./icons/GameIcon.vue";
+</script>
 <template>
     <div>
         <ul>
             <div class="right">
-                <li><a href="">home</a></li>
+                <li><a href=""><HomeIcon></HomeIcon></a></li>
             </div>
             <div class="left">
-                <li><a href="">detector</a></li>
-                <li><a href="">coach</a></li>
-                <li><a href="">game</a></li>
+                <li><a href=""><DetectorIcon></DetectorIcon></a></li>
+                <li>
+                    <a href=""><CoachIcon></CoachIcon></a>
+                </li>
+                <li><a href=""><GameIcon></GameIcon></a></li>
             </div>
         </ul>
     </div>
@@ -29,6 +36,6 @@ ul li a {
     text-decoration: none;
     display: block;
     padding: 15px;
-    color: white;
+    color: black;
 }
 </style>
