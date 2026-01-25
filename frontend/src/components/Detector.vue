@@ -1,12 +1,22 @@
 <script setup></script>
 
 <template>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=League+Gothic&display=swap"
+        rel="stylesheet"
+    />
     <section>
         <div class="detector-box">
             <form action="">
                 <div class="detector-form">
                     <label for="detector-box">Detector</label>
-                    <textarea name="detector" id="detector-box" placeholder="type the text you wish to detect"></textarea>
+                    <textarea
+                        name="detector"
+                        id="detector-box"
+                        placeholder="type the text you wish to detect"
+                    ></textarea>
                     <button class="detector-type">T</button>
                     <button type="submit" class="submit">Detect</button>
                 </div>
@@ -16,6 +26,9 @@
 </template>
 
 <style scoped>
+* {
+    font-family: "League Gothic", serif;
+}
 section {
     padding: 50px;
     background-color: #f9f7f7;
@@ -30,9 +43,9 @@ textarea {
     width: 100%;
     height: 500px;
     border-radius: 10px;
-    border: 3px solid #726E5F;
+    border: 3px solid #726e5f;
     padding: 10% 10px;
-    font-size: 16px;
+    font-size: 25px;
 }
 label {
     position: absolute;
@@ -45,11 +58,12 @@ label {
     font-size: 20px;
     text-align: center;
     border-radius: 0 0 10px 10px;
-    border: 3px solid #726E5F;
+    border: 3px solid #726e5f;
     font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
+    font-size: 28px;
 }
 
 button {
@@ -63,8 +77,9 @@ button.submit {
     bottom: 5%;
     right: 5%;
     padding: 10px;
-    font-size: 20px;
+    font-size: 28px;
     border-radius: 10px;
+    letter-spacing: 1px;
 }
 
 button.submit:hover {
@@ -76,7 +91,7 @@ button.detector-type {
     top: 0%;
     right: 2%;
     padding: 10px;
-    font-size: 16px;
-    border-radius:0 0 5px 5px;
+    font-size: 20px;
+    border-radius: 0 0 5px 5px;
 }
 </style>

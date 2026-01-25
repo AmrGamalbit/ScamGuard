@@ -1,6 +1,13 @@
 <script setup></script>
 
 <template>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=League+Gothic&display=swap"
+        rel="stylesheet"
+    />
+    <link href='https://fonts.googleapis.com/css?family=Leckerli One' rel='stylesheet'>
     <section>
         <div class="tip-frame">
             <div class="tip-container">
@@ -15,7 +22,7 @@
 section {
     border-radius: 10px;
     padding: 50px;
-    background-color: #F9F7F7;
+    background-color: #f9f7f7;
     height: 200px;
 }
 div.tip-frame {
@@ -35,13 +42,15 @@ div.tip-container {
     top: 0;
     left: 0;
     background-color: #dbe2ef;
-    padding: 10px;
+    padding: 10px 20px;
     border-radius: 10px 0 30px 0;
+    font-family: "Leckerli One";
 }
 p {
     color: white;
     text-align: center;
-    font-size: 20px;
+    font-size: 35px;
     font-weight: 500;
+    font-family: "League Gothic", serif;
 }
 </style>
