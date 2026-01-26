@@ -1,12 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-  const progress = ref(89)
+defineProps({progress : Number})
 </script>
 
 <template>
     <div id="progress">
         <p>{{ progress }}%</p>
-        <div id="progress-bar" :style="{ '--progress': progress + '%'}"></div>
+        <div id="progress-bar" :style="{ '--progress': progress + '%'}" :class="progress > 50 ? `red` : `green`"></div>
     </div>
 </template>
 
@@ -22,7 +22,6 @@ import { ref } from 'vue'
 #progress-bar:after {
     content: "";
     display: block;
-    background: #49a078;
     width: progress + '%';
     height: 100%;
     width: var(--progress);
@@ -38,5 +37,13 @@ import { ref } from 'vue'
 p {
     font-size: 25px;
     color: #1F2421;
+}
+
+.green:after {
+    background: #49a078;
+}
+
+.red:after {
+    background: #C94C4C;
 }
 </style>

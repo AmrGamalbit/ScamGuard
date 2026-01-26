@@ -1,5 +1,20 @@
 <script setup>
 import DetectionResult from "./DetectionResult.vue";
+import { ref } from "vue"
+const textInput = defineModel()
+let progress = ref(56)
+async function detectScam() {
+  const response = await fetch('http://127.0.0.1:8000/scan/text', {
+    method: 'POST',
+    body: JSON.stringify({
+      text: textInput.value
+    }),
+    headers: {
+      'Content-type': 'application/json',
+    }
+  })
+  progress.value = await response.json()
+}
 </script>
 
 <template>
@@ -18,15 +33,16 @@ import DetectionResult from "./DetectionResult.vue";
                         name="detector"
                         id="detector-box"
                         placeholder="type the text you wish to detect"
+                        v-model="textInput"
                     ></textarea>
                     <button class="detector-type">T</button>
-                    <button type="submit" class="submit">Detect</button>
+                    <button type="submit" class="submit" @click.prevent="detectScam">Detect</button>
                 </div>
             </form>
         </div>
         <div class="result">
             <br />
-            <DetectionResult> </DetectionResult>
+            <DetectionResult :progress="progress"> </DetectionResult>
         </div>
     </section>
 </template>
