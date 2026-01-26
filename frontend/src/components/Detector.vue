@@ -1,4 +1,6 @@
-<script setup></script>
+<script setup>
+import DetectionResult from "./DetectionResult.vue";
+</script>
 
 <template>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,6 +24,10 @@
                 </div>
             </form>
         </div>
+        <div class="result">
+            <br />
+            <DetectionResult> </DetectionResult>
+        </div>
     </section>
 </template>
 
@@ -39,6 +45,12 @@ div.detector-box {
     width: 80%;
     margin: 0 auto;
 }
+
+div.result {
+    width: 80%;
+    margin: 0 auto;
+}
+
 textarea {
     width: 100%;
     height: 500px;
@@ -64,6 +76,7 @@ label {
     justify-content: center;
     align-items: center;
     font-size: 28px;
+    letter-spacing: 1px;
 }
 
 button {
