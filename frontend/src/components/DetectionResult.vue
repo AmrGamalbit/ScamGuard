@@ -36,7 +36,7 @@ defineProps({progress : Number})
 
 p {
     font-size: 25px;
-    color: #1F2421;
+    color: #2C2C2C;
 }
 
 .green:after {

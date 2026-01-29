@@ -75,6 +75,7 @@ textarea {
     border: 3px solid #726e5f;
     padding: 10% 10px;
     font-size: 25px;
+    color: #2C2C2C;
 }
 label {
     position: absolute;
@@ -94,6 +95,7 @@ label {
     align-items: center;
     font-size: 28px;
     letter-spacing: 1px;
+    color: #1F2933;
 }
 
 button {

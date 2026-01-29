@@ -36,6 +36,7 @@ div.tip-frame {
     display: flex;
     justify-content: center;
     align-items: center;
+    color: #1F2933;
 }
 div.tip-container {
     position: absolute;

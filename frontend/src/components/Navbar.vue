@@ -28,6 +28,7 @@ ul {
     margin: 0;
     padding: 0;
     justify-content: space-between;
+    align-items: baseline
 }
 ul div.left {
     display: flex;
@@ -36,6 +37,6 @@ ul li a {
     text-decoration: none;
     display: block;
     padding: 15px;
-    color: black;
+    color: #f9f7f7;
 }
 </style>
