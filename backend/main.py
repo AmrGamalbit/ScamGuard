@@ -16,7 +16,7 @@ def preprocess_text(text):
     x_text = vectorizer.transform(text_corpus)
     return x_text
 
-class RequestModel(BaseModel):
+class ScanRequest(BaseModel):
     text: str = "empty"
 
 app = FastAPI()
@@ -33,11 +33,10 @@ app.add_middleware(
 async def index():
     return "server is running"
 
-@app.get("/scan/text")
-async def scan_text():
-    text = """
-    Hello, do you want to meet today
-    """
+@app.post("/scan/text")
+async def scan_text(raw_data: ScanRequest):
+    data = raw_data.model_dump()
+    text = data.get("text")
     X_text = preprocess_text(text)
     prediction = MODEL.predict(X_text)
     label = "scam" if prediction == 1 else "human"

@@ -13,7 +13,8 @@ async function detectScam() {
       'Content-type': 'application/json',
     }
   })
-  progress.value = await response.json()
+  const data = await response.json()
+  progress.value = Math.round((data["prob_scam"] * 100))
 }
 </script>
 
