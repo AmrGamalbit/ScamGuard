@@ -1,13 +1,20 @@
 <script setup>
-import { ref } from 'vue'
-defineProps({progress : Number})
+import { ref } from "vue";
+defineProps({ progress: Number, message: String });
 </script>
 
 <template>
     <div id="progress">
         <p>{{ progress }}%</p>
-        <div id="progress-bar" :style="{ '--progress': progress + '%'}" :class="progress > 50 ? `red` : `green`"></div>
+        <div
+            id="progress-bar"
+            :style="{ '--progress': progress + '%' }"
+            :class="progress > 50 ? `red` : `green`"
+        ></div>
     </div>
+    <p id="tag" :class="progress > 50 ? `red` : `green`">
+        {{ message }}
+    </p>
 </template>
 
 <style scoped>
@@ -22,10 +29,10 @@ defineProps({progress : Number})
 #progress-bar:after {
     content: "";
     display: block;
-    width: progress + '%';
+    width: progress + "%";
     height: 100%;
     width: var(--progress);
-    border-radius: 9px;
+    border-radius: 5px;
 }
 
 #progress {
@@ -36,7 +43,7 @@ defineProps({progress : Number})
 
 p {
     font-size: 25px;
-    color: #2C2C2C;
+    color: #2c2c2c;
 }
 
 .green:after {
@@ -44,6 +51,19 @@ p {
 }
 
 .red:after {
-    background: #C94C4C;
+    background: #c94c4c;
+}
+
+.red {
+    color: #c94c4c;
+}
+
+.green {
+    color: #49a078;
+}
+
+#tag {
+    text-align: center;
+    padding-top: 10px;
 }
 </style>

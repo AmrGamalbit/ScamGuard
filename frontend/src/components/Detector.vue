@@ -1,20 +1,39 @@
 <script setup>
 import DetectionResult from "./DetectionResult.vue";
-import { ref } from "vue"
-const textInput = defineModel()
-let progress = ref(56)
+import { ref } from "vue";
+const textInput = defineModel();
+let progress = ref(0);
+let detect = ref(false);
+let scamMessage = ref("");
+const scamStatuses = [
+    { min: 90, max: 100, message: "This is very likely a scam" },
+    {
+        min: 70,
+        max: 89,
+        message: "This may be a scam. Please proceed with caution",
+    },
+    { min: 50, max: 69, message: "This could be a scam" },
+    { min: 20, max: 49, message: "This is unlikely to be a scam" },
+    { min: 0, max: 19, message: "No scam indicators detected" },
+];
 async function detectScam() {
-  const response = await fetch('http://127.0.0.1:8000/scan/text', {
-    method: 'POST',
-    body: JSON.stringify({
-      text: textInput.value
-    }),
-    headers: {
-      'Content-type': 'application/json',
+    if (textInput.value) {
+        detect.value = true;
+        const response = await fetch("http://127.0.0.1:8000/scan/text", {
+            method: "POST",
+            body: JSON.stringify({
+                text: textInput.value,
+            }),
+            headers: {
+                "Content-type": "application/json",
+            },
+        });
+        const data = await response.json();
+        const scamProbability = Math.round(data["prob_scam"] * 100);
+        const status = scamStatuses.find(s => s.min <= scamProbability && scamProbability <= s.max)
+        progress.value = scamProbability;
+        scamMessage.value = status
     }
-  })
-  const data = await response.json()
-  progress.value = Math.round((data["prob_scam"] * 100))
 }
 </script>
 
@@ -37,13 +56,20 @@ async function detectScam() {
                         v-model="textInput"
                     ></textarea>
                     <button class="detector-type">T</button>
-                    <button type="submit" class="submit" @click.prevent="detectScam">Detect</button>
+                    <button
+                        type="submit"
+                        class="submit"
+                        @click.prevent="detectScam"
+                    >
+                        Detect
+                    </button>
                 </div>
             </form>
         </div>
         <div class="result">
             <br />
-            <DetectionResult :progress="progress"> </DetectionResult>
+            <DetectionResult :progress="progress" :message="scamMessage.message" v-if="detect">
+            </DetectionResult>
         </div>
     </section>
 </template>
@@ -75,7 +101,7 @@ textarea {
     border: 3px solid #726e5f;
     padding: 10% 10px;
     font-size: 25px;
-    color: #2C2C2C;
+    color: #2c2c2c;
 }
 label {
     position: absolute;
@@ -95,7 +121,7 @@ label {
     align-items: center;
     font-size: 28px;
     letter-spacing: 1px;
-    color: #1F2933;
+    color: #1f2933;
 }
 
 button {
