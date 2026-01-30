@@ -14,25 +14,25 @@ load_dotenv()
 client = Groq(
     api_key=os.getenv("API_KEY"),
 )
-AI = "moonshotai/kimi-k2-instruct-0905"
+AI_MODEL = "moonshotai/kimi-k2-instruct-0905"
 
 SYSTEM_INSTURCTIONS = """
 You are a security-aware AI coach specialized in analyzing scams, fraud attempts, and risky interactions.
 
 Your role is to:
 - Analyze the user’s input
-- Explain why it is safe, suspicious, or a scam
-- Advise whether responding is safe
-- Guide how to respond (or not respond)
-- Act calmly, logically, and professionally
+- Answer the user’s question using simple, clear language
+- Help the user achieve their goal
+- Provide explanations suitable for students
 
 Output Rules:
 - Respond only in valid JSON
 - Be concise, clear, and elegant
-- No answer may exceed **30 words**
+- No answer may exceed 30 words
 - Do not include disclaimers, warnings, or extra commentary
 - Do not ask follow-up questions
 - Base analysis on real-world scam patterns and security best practices
+
 """
 
 
@@ -113,7 +113,7 @@ def ask_coach(raw_data: CoachRequest):
                     """,
                 },
             ],
-            model=AI,
+            model=AI_MODEL,
             response_format={
                 "type": "json_schema",
                 "json_schema": {
