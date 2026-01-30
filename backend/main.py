@@ -1,11 +1,39 @@
+import json
+import os
 import string
 
 import joblib
-from fastapi import FastAPI
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from groq import APIConnectionError, APIStatusError, Groq, RateLimitError
 from pydantic import BaseModel
 
 MODEL, stemmer, stopwords_set, vectorizer = joblib.load("models/model.pkl")
+load_dotenv()
+client = Groq(
+    api_key=os.getenv("API_KEY"),
+)
+AI = "moonshotai/kimi-k2-instruct-0905"
+
+SYSTEM_INSTURCTIONS = """
+You are a security-aware AI coach specialized in analyzing scams, fraud attempts, and risky interactions.
+
+Your role is to:
+- Analyze the user’s input
+- Explain why it is safe, suspicious, or a scam
+- Advise whether responding is safe
+- Guide how to respond (or not respond)
+- Act calmly, logically, and professionally
+
+Output Rules:
+- Respond only in valid JSON
+- Be concise, clear, and elegant
+- No answer may exceed **30 words**
+- Do not include disclaimers, warnings, or extra commentary
+- Do not ask follow-up questions
+- Base analysis on real-world scam patterns and security best practices
+"""
 
 
 def preprocess_text(text):
@@ -20,7 +48,16 @@ def preprocess_text(text):
 
 
 class ScanRequest(BaseModel):
-    text: str = "empty"
+    text: str
+
+
+class CoachRequest(BaseModel):
+    question: str
+    text: str
+
+
+class Response(BaseModel):
+    answer: str
 
 
 app = FastAPI()
@@ -54,3 +91,107 @@ async def scan_text(raw_data: ScanRequest):
         "prob_scam": proba[0][1],
         "prob_not_scam": proba[0][0],
     }
+
+
+@app.post("/ask-coach")
+def ask_coach(raw_data: CoachRequest):
+    data = raw_data.model_dump()
+    question = data.get("question")
+    text = data.get("text")
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": SYSTEM_INSTURCTIONS},
+                {
+                    "role": "user",
+                    "content": f"""
+                    Question:
+                    {question}
+
+                    Context:
+                    {text}
+                    """,
+                },
+            ],
+            model=AI,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "Learning_Code",
+                    "schema": Response.model_json_schema(),
+                },
+            },
+        )
+        content = chat_completion.choices[0].message.content
+        parsed = Response.model_validate_json(content)
+        return parsed
+
+    except APIConnectionError as e:
+        raise HTTPException(
+            503,
+            detail={
+                "error": "groq_api_error",
+                "message": "Failed to communicate with the AI service. Please check your internet connection and try again.",
+                "details": str(e) if str(e) else "Connection timeout or network error",
+                "suggestion": "Please wait a moment and try again. If the problem persists, check your API key configuration.",
+            },
+        )
+
+    except json.JSONDecodeError as e:
+        raise HTTPException(
+            502,
+            detail={
+                "error": "model_output_invalid",
+                "message": "The AI service returned an invalid response format. This may be a temporary issue.",
+                "details": f"JSON parsing failed: {str(e)}",
+                "suggestion": "Please try again. If the problem continues, the request may be too complex - try simplifying your project description.",
+            },
+        )
+
+    except RateLimitError:
+        raise HTTPException(
+            429,
+            detail={
+                "error": "rate_limit_exceeded",
+                "message": "Too many requests. Please wait a moment before trying again.",
+                "details": "The AI service is temporarily limiting requests to manage load.",
+                "suggestion": "Please wait 30-60 seconds before making another request.",
+            },
+        )
+
+    except APIStatusError as e:
+        error_messages = {
+            400: "Invalid request to AI service. Please check your input and try again.",
+            401: "Authentication failed. Please check your API key configuration.",
+            403: "Access forbidden. Please check your API key permissions.",
+            404: "AI service endpoint not found. This may indicate a configuration issue.",
+            500: "The AI service encountered an internal error. Please try again later.",
+            502: "Bad gateway. The AI service is temporarily unavailable.",
+            503: "Service unavailable. The AI service is temporarily down.",
+            504: "Gateway timeout. The request took too long to process.",
+        }
+        message = error_messages.get(
+            e.status_code, f"The AI service returned an error (status {e.status_code})"
+        )
+
+        raise HTTPException(
+            502,
+            detail={
+                "error": "api_status_error",
+                "message": message,
+                "details": f"HTTP {e.status_code}",
+                "suggestion": "Please try again in a few moments. If the problem persists, check your API configuration.",
+            },
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            500,
+            {
+                "error": "unexpected_error",
+                "message": "An unexpected error occurred while generating the architecture.",
+                "details": str(e),
+                "suggestion": "Please try again. If the problem continues, contact support.",
+            },
+        )
+    return {"question": question, "answer": "hello, this is the answer!"}

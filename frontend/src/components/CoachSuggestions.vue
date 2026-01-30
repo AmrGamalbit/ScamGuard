@@ -1,10 +1,12 @@
-<script setup></script>
+<script setup>
+  const emit = defineEmits(["select"])
+</script>
 
 <template>
     <ul id="coach-suggestions">
-        <li class="coach-suggestion">Why is this a scam?</li>
-        <li class="coach-suggestion">What’s the safest next step?</li>
-        <li class="coach-suggestion">Should I reply? If yes, how?</li>
+        <li class="coach-suggestion" @click="$emit('select', 'Why is this a scam')">Why is this a scam?</li>
+        <li class="coach-suggestion" @click="$emit('select', 'What’s the safest next step?')">What’s the safest next step?</li>
+        <li class="coach-suggestion" @click="$emit('select', 'Should I reply? If yes, how?')">Should I reply? If yes, how?</li>
     </ul>
 </template>
 

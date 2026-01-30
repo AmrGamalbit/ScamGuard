@@ -79,7 +79,7 @@ async function detectScam() {
             >
             </DetectionResult>
             <br>
-            <CoachQuickHelp v-if="detect"></CoachQuickHelp>
+            <CoachQuickHelp v-if="detect" :text="textInput"></CoachQuickHelp>
         </div>
     </section>
 </template>

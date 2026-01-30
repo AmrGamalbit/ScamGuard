@@ -1,27 +1,46 @@
 <script setup>
 import CoachSuggestions from "./CoachSuggestions.vue";
 import SendIcon from "./icons/SendIcon.vue";
+import { ref } from "vue";
+
+const question = defineModel();
+let answer = ref("");
+const props = defineProps({ text: String });
+async function askCoach(question) {
+    const response = await fetch("http://127.0.0.1:8000/ask-coach", {
+        method: "POST",
+        body: JSON.stringify({
+            question: question,
+            text: props.text,
+        }),
+        headers: {
+            "Content-type": "application/json",
+        },
+    });
+    const data = await response.json();
+    answer.value = data["answer"];
+}
 </script>
 
 <template>
-    <CoachSuggestions></CoachSuggestions>
+    <CoachSuggestions @select="askCoach"></CoachSuggestions>
     <form action="" id="ask-coach-smallbox">
         <div id="coach-explaination">
-            <img src="./icons/CoachQuickHelpIcon.png" alt="coach image">
+            <img src="./icons/CoachQuickHelpIcon.png" alt="coach image" />
             <p>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Cumque
-                ad necessitatibus accusamus nihil dolorum, fugit ex alias
-                inventore facilis nobis tempora, minima quam, eius nulla
-                veritatis nesciunt in? Aliquid, perferendis?
+                {{ answer }}
             </p>
         </div>
-        <label for="coach">Hello</label>
+        <label for="coach"></label>
         <textarea
             name="coach"
             id="ask-coach-textbox"
             placeholder="ask coach anything"
+            v-model="question"
         ></textarea>
-        <button type="submit"><SendIcon></SendIcon></button>
+        <button type="submit" @click.prevent="askCoach(question)">
+            <SendIcon></SendIcon>
+        </button>
     </form>
 </template>
 
