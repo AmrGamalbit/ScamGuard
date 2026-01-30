@@ -9,7 +9,7 @@ import GameIcon from "./icons/GameIcon.vue";
         <ul>
             <div class="right">
                 <li>
-                    <a href=""><HomeIcon /></a>
+                    <a href="/"><HomeIcon /></a>
                 </li>
             </div>
             <div class="left">
@@ -20,7 +20,7 @@ import GameIcon from "./icons/GameIcon.vue";
                     <a href=""><CoachIcon /></a>
                 </li>
                 <li>
-                    <a href=""><GameIcon /></a>
+                    <a href="/game"><GameIcon /></a>
                 </li>
             </div>
         </ul>
