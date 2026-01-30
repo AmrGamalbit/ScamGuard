@@ -8,14 +8,20 @@ import GameIcon from "./icons/GameIcon.vue";
     <div>
         <ul>
             <div class="right">
-                <li><a href=""><HomeIcon></HomeIcon></a></li>
+                <li>
+                    <a href=""><HomeIcon></HomeIcon></a>
+                </li>
             </div>
             <div class="left">
-                <li><a href=""><DetectorIcon></DetectorIcon></a></li>
+                <li>
+                    <a href=""><DetectorIcon></DetectorIcon></a>
+                </li>
                 <li>
                     <a href=""><CoachIcon></CoachIcon></a>
                 </li>
-                <li><a href=""><GameIcon></GameIcon></a></li>
+                <li>
+                    <a href=""><GameIcon></GameIcon></a>
+                </li>
             </div>
         </ul>
     </div>
@@ -28,7 +34,7 @@ ul {
     margin: 0;
     padding: 0;
     justify-content: space-between;
-    align-items: baseline
+    align-items: baseline;
 }
 ul div.left {
     display: flex;

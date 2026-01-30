@@ -1,5 +1,7 @@
 <script setup>
 import DetectionResult from "./DetectionResult.vue";
+import CoachQuickHelp from "./CoachQuickHelp.vue";
+
 import { ref } from "vue";
 const textInput = defineModel();
 let progress = ref(0);
@@ -30,9 +32,11 @@ async function detectScam() {
         });
         const data = await response.json();
         const scamProbability = Math.round(data["prob_scam"] * 100);
-        const status = scamStatuses.find(s => s.min <= scamProbability && scamProbability <= s.max)
+        const status = scamStatuses.find(
+            (s) => s.min <= scamProbability && scamProbability <= s.max,
+        );
         progress.value = scamProbability;
-        scamMessage.value = status
+        scamMessage.value = status;
     }
 }
 </script>
@@ -68,8 +72,14 @@ async function detectScam() {
         </div>
         <div class="result">
             <br />
-            <DetectionResult :progress="progress" :message="scamMessage.message" v-if="detect">
+            <DetectionResult
+                :progress="progress"
+                :message="scamMessage.message"
+                v-if="detect"
+            >
             </DetectionResult>
+            <br>
+            <CoachQuickHelp v-if="detect"></CoachQuickHelp>
         </div>
     </section>
 </template>

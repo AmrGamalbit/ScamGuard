@@ -7,7 +7,10 @@
         href="https://fonts.googleapis.com/css2?family=League+Gothic&display=swap"
         rel="stylesheet"
     />
-    <link href='https://fonts.googleapis.com/css?family=Leckerli One' rel='stylesheet'>
+    <link
+        href="https://fonts.googleapis.com/css?family=Leckerli One"
+        rel="stylesheet"
+    />
     <section>
         <div class="tip-frame">
             <div class="tip-container">
@@ -36,7 +39,7 @@ div.tip-frame {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #1F2933;
+    color: #1f2933;
 }
 div.tip-container {
     position: absolute;

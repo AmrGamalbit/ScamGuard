@@ -1,23 +1,27 @@
+import string
+
+import joblib
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import joblib
-import string
 
 MODEL, stemmer, stopwords_set, vectorizer = joblib.load("models/model.pkl")
+
 
 def preprocess_text(text):
     text_corpus = []
     text = text.lower()
-    text = text.translate(str.maketrans('', '', string.punctuation)).split()
+    text = text.translate(str.maketrans("", "", string.punctuation)).split()
     text = [stemmer.stem(word) for word in text if word not in stopwords_set]
     text = " ".join(text)
     text_corpus.append(text)
     x_text = vectorizer.transform(text_corpus)
     return x_text
 
+
 class ScanRequest(BaseModel):
     text: str = "empty"
+
 
 app = FastAPI()
 origins = ["http://localhost:5173"]
@@ -29,9 +33,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def index():
     return "server is running"
+
 
 @app.post("/scan/text")
 async def scan_text(raw_data: ScanRequest):
@@ -47,4 +53,4 @@ async def scan_text(raw_data: ScanRequest):
         "label": label,
         "prob_scam": proba[0][1],
         "prob_not_scam": proba[0][0],
-        }
+    }
