@@ -9,18 +9,18 @@ import GameIcon from "./icons/GameIcon.vue";
         <ul>
             <div class="right">
                 <li>
-                    <a href=""><HomeIcon></HomeIcon></a>
+                    <a href=""><HomeIcon /></a>
                 </li>
             </div>
             <div class="left">
                 <li>
-                    <a href=""><DetectorIcon></DetectorIcon></a>
+                    <a href=""><DetectorIcon /></a>
                 </li>
                 <li>
-                    <a href=""><CoachIcon></CoachIcon></a>
+                    <a href=""><CoachIcon /></a>
                 </li>
                 <li>
-                    <a href=""><GameIcon></GameIcon></a>
+                    <a href=""><GameIcon /></a>
                 </li>
             </div>
         </ul>

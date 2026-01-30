@@ -1,15 +1,11 @@
 <script setup>
 import Navbar from "@/components/Navbar.vue";
-import Hero from "@/components/Hero.vue";
-import Tip from "@/components/Tip.vue";
-import Detector from "@/components/Detector.vue"
+import { RouterView } from "vue-router";
 </script>
 
 <template>
-    <Navbar></Navbar>
-    <Hero></Hero>
-    <Tip></Tip>
-    <Detector></Detector>
+    <Navbar />
+    <RouterView />
 </template>
 
 <style>

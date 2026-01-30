@@ -76,10 +76,9 @@ async function detectScam() {
                 :progress="progress"
                 :message="scamMessage.message"
                 v-if="detect"
-            >
-            </DetectionResult>
-            <br>
-            <CoachQuickHelp v-if="detect" :text="textInput"></CoachQuickHelp>
+            />
+            <br />
+            <CoachQuickHelp v-if="detect" :text="textInput" />
         </div>
     </section>
 </template>

@@ -23,7 +23,7 @@ async function askCoach(question) {
 </script>
 
 <template>
-    <CoachSuggestions @select="askCoach"></CoachSuggestions>
+    <CoachSuggestions @select="askCoach" />
     <form action="" id="ask-coach-smallbox">
         <div id="coach-explaination">
             <img src="./icons/CoachQuickHelpIcon.png" alt="coach image" />
@@ -39,7 +39,7 @@ async function askCoach(question) {
             v-model="question"
         ></textarea>
         <button type="submit" @click.prevent="askCoach(question)">
-            <SendIcon></SendIcon>
+            <SendIcon />
         </button>
     </form>
 </template>
