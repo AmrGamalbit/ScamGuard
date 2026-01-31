@@ -1,6 +1,7 @@
 import json
 import os
 import string
+from typing import List
 
 import joblib
 from dotenv import load_dotenv
@@ -8,7 +9,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from groq import APIConnectionError, APIStatusError, Groq, RateLimitError
 from pydantic import BaseModel
-from typing import List
 
 MODEL, stemmer, stopwords_set, vectorizer = joblib.load("models/model.pkl")
 load_dotenv()
@@ -56,8 +56,9 @@ class CoachRequest(BaseModel):
     text: str
 
 
-class Response(BaseModel):
+class CoachResponse(BaseModel):
     answer: str
+
 
 class QuizQuestion(BaseModel):
     question: str
@@ -66,8 +67,10 @@ class QuizQuestion(BaseModel):
     correct_answer_index: int
     explanation: str
 
+
 class QuizQuestions(BaseModel):
     questions: List[QuizQuestion]
+
 
 app = FastAPI()
 origins = ["http://localhost:5173"]
@@ -127,12 +130,12 @@ async def ask_coach(raw_data: CoachRequest):
                 "type": "json_schema",
                 "json_schema": {
                     "name": "Learning_Code",
-                    "schema": Response.model_json_schema(),
+                    "schema": CoachResponse.model_json_schema(),
                 },
             },
         )
         content = chat_completion.choices[0].message.content
-        parsed = Response.model_validate_json(content)
+        parsed = CoachResponse.model_validate_json(content)
         return parsed
 
     except APIConnectionError as e:
@@ -153,7 +156,7 @@ async def ask_coach(raw_data: CoachRequest):
                 "error": "model_output_invalid",
                 "message": "The AI service returned an invalid response format. This may be a temporary issue.",
                 "details": f"JSON parsing failed: {str(e)}",
-                "suggestion": "Please try again. If the problem continues, the request may be too complex - try simplifying your project description.",
+                "suggestion": "Please try again. If the problem continues, the request may be too complex - try simplifying question.",
             },
         )
 
@@ -203,17 +206,17 @@ async def ask_coach(raw_data: CoachRequest):
                 "suggestion": "Please try again. If the problem continues, contact support.",
             },
         )
-    return {"question": question, "answer": "hello, this is the answer!"}
 
 
 @app.get("/get-questions")
 async def get_question():
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {"role": "system", "content": SYSTEM_INSTURCTIONS},
-            {
-                "role": "user",
-                "content": """
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": SYSTEM_INSTURCTIONS},
+                {
+                    "role": "user",
+                    "content": """
                 Create 10 educational multiple-choice questions to teach students how to recognize scams and stay safe online.
 
                 Requirements:
@@ -226,17 +229,86 @@ async def get_question():
                   - A short explanation (1–2 sentences) explaining why it is correct
                 - Keep the content age-appropriate and easy to understand.
                 """,
+                },
+            ],
+            model=AI_MODEL,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "Learning_Code",
+                    "schema": QuizQuestions.model_json_schema(),
+                },
             },
-        ],
-        model=AI_MODEL,
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "Learning_Code",
-                "schema": QuizQuestions.model_json_schema(),
+        )
+        content = chat_completion.choices[0].message.content
+        parsed = QuizQuestions.model_validate_json(content)
+        return parsed
+
+    except APIConnectionError as e:
+        raise HTTPException(
+            503,
+            detail={
+                "error": "groq_api_error",
+                "message": "Failed to communicate with the AI service. Please check your internet connection and try again.",
+                "details": str(e) if str(e) else "Connection timeout or network error",
+                "suggestion": "Please wait a moment and try again. If the problem persists, check your API key configuration.",
             },
-        },
-    )
-    content = chat_completion.choices[0].message.content
-    parsed = QuizQuestions.model_validate_json(content)
-    return parsed
+        )
+
+    except json.JSONDecodeError as e:
+        raise HTTPException(
+            502,
+            detail={
+                "error": "model_output_invalid",
+                "message": "The AI service returned an invalid response format. This may be a temporary issue.",
+                "details": f"JSON parsing failed: {str(e)}",
+                "suggestion": "Please try again.",
+            },
+        )
+
+    except RateLimitError:
+        raise HTTPException(
+            429,
+            detail={
+                "error": "rate_limit_exceeded",
+                "message": "Too many requests. Please wait a moment before trying again.",
+                "details": "The AI service is temporarily limiting requests to manage load.",
+                "suggestion": "Please wait 30-60 seconds before making another request.",
+            },
+        )
+
+    except APIStatusError as e:
+        error_messages = {
+            400: "Invalid request to AI service. Please check your input and try again.",
+            401: "Authentication failed. Please check your API key configuration.",
+            403: "Access forbidden. Please check your API key permissions.",
+            404: "AI service endpoint not found. This may indicate a configuration issue.",
+            500: "The AI service encountered an internal error. Please try again later.",
+            502: "Bad gateway. The AI service is temporarily unavailable.",
+            503: "Service unavailable. The AI service is temporarily down.",
+            504: "Gateway timeout. The request took too long to process.",
+        }
+        message = error_messages.get(
+            e.status_code, f"The AI service returned an error (status {e.status_code})"
+        )
+
+        raise HTTPException(
+            502,
+            detail={
+                "error": "api_status_error",
+                "message": message,
+                "details": f"HTTP {e.status_code}",
+                "suggestion": "Please try again in a few moments. If the problem persists, check your API configuration.",
+            },
+        )
+
+    except Exception as e:
+        raise HTTPException(
+            500,
+            {
+                "error": "unexpected_error",
+                "message": "An unexpected error occurred while generating the architecture.",
+                "details": str(e),
+                "suggestion": "Please try again. If the problem continues, contact support.",
+            },
+        )
