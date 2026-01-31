@@ -8,6 +8,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from groq import APIConnectionError, APIStatusError, Groq, RateLimitError
 from pydantic import BaseModel
+from typing import List
 
 MODEL, stemmer, stopwords_set, vectorizer = joblib.load("models/model.pkl")
 load_dotenv()
@@ -32,7 +33,6 @@ Output Rules:
 - Do not include disclaimers, warnings, or extra commentary
 - Do not ask follow-up questions
 - Base analysis on real-world scam patterns and security best practices
-
 """
 
 
@@ -59,6 +59,15 @@ class CoachRequest(BaseModel):
 class Response(BaseModel):
     answer: str
 
+class QuizQuestion(BaseModel):
+    question: str
+    answers: List[str]
+    correct_answer: str
+    correct_answer_index: int
+    explanation: str
+
+class QuizQuestions(BaseModel):
+    questions: List[QuizQuestion]
 
 app = FastAPI()
 origins = ["http://localhost:5173"]
@@ -94,7 +103,7 @@ async def scan_text(raw_data: ScanRequest):
 
 
 @app.post("/ask-coach")
-def ask_coach(raw_data: CoachRequest):
+async def ask_coach(raw_data: CoachRequest):
     data = raw_data.model_dump()
     question = data.get("question")
     text = data.get("text")
@@ -195,3 +204,39 @@ def ask_coach(raw_data: CoachRequest):
             },
         )
     return {"question": question, "answer": "hello, this is the answer!"}
+
+
+@app.get("/get-questions")
+async def get_question():
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": SYSTEM_INSTURCTIONS},
+            {
+                "role": "user",
+                "content": """
+                Create 10 educational multiple-choice questions to teach students how to recognize scams and stay safe online.
+
+                Requirements:
+                - Use real-life scenarios (texts, emails, social media messages, phone calls).
+                - Test decision-making: when to respond, when to ignore, and when to report.
+                - Each question must have 4 answer choices (A–D).
+                - Only one correct answer per question.
+                - After each question, include:
+                  - The correct answer
+                  - A short explanation (1–2 sentences) explaining why it is correct
+                - Keep the content age-appropriate and easy to understand.
+                """,
+            },
+        ],
+        model=AI_MODEL,
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "Learning_Code",
+                "schema": QuizQuestions.model_json_schema(),
+            },
+        },
+    )
+    content = chat_completion.choices[0].message.content
+    parsed = QuizQuestions.model_validate_json(content)
+    return parsed
