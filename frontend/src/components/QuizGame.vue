@@ -1,5 +1,49 @@
 <script setup>
 import QuizQuestion from "./QuizQuestion.vue";
+import { ref } from "vue";
+const questions = [
+    {
+        question: "what is scam?",
+        answers: ["don't know", "don't care", "don't know", "don't know"],
+        correctAnswer: 1,
+    },
+    {
+        question: "what is safe?",
+        answers: ["don't know", "don't care", "don't know", "don't know"],
+        correctAnswer: 0,
+    },
+    {
+        question: "fd is safe?",
+        answers: ["don't know", "don't care", "don't know", "don't know"],
+        correctAnswer: 0,
+    },
+];
+
+const currentQuestionIndex = ref(0);
+const question = ref("");
+const answers = ref([]);
+const correctAnswerIndex = ref(0);
+const score = ref(0);
+
+function startQuiz() {
+    getNextQuestion();
+}
+
+function getNextQuestion(isAnsweredCorrectly) {
+    if (isAnsweredCorrectly) {
+        score.value += 1;
+    }
+    if (currentQuestionIndex.value < questions.length) {
+        question.value = questions[currentQuestionIndex.value].question;
+        answers.value = questions[currentQuestionIndex.value].answers;
+        correctAnswerIndex.value =
+            questions[currentQuestionIndex.value].correctAnswer;
+        currentQuestionIndex.value += 1;
+    } else {
+        console.log("We reach the end");
+    }
+}
+startQuiz();
 </script>
 
 <template>
@@ -12,8 +56,14 @@ import QuizQuestion from "./QuizQuestion.vue";
     <section>
         <h2>Interactive Game</h2>
         <p>Play and compete</p>
-        <br>
-        <QuizQuestion />
+        <br />
+        <p>{{ score }}</p>
+        <QuizQuestion
+            :question
+            :answers
+            :correctAnswerIndex
+            @next="getNextQuestion"
+        />
     </section>
 </template>
 
