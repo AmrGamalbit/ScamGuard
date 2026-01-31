@@ -1,31 +1,23 @@
 <script setup>
 import QuizQuestion from "./QuizQuestion.vue";
 import { ref } from "vue";
-const questions = [
-    {
-        question: "what is scam?",
-        answers: ["don't know", "don't care", "don't know", "don't know"],
-        correctAnswer: 1,
-    },
-    {
-        question: "what is safe?",
-        answers: ["don't know", "don't care", "don't know", "don't know"],
-        correctAnswer: 0,
-    },
-    {
-        question: "fd is safe?",
-        answers: ["don't know", "don't care", "don't know", "don't know"],
-        correctAnswer: 0,
-    },
-];
+const questions = ref([]);
+
+async function fetchQuestions() {
+    const response = await fetch("http://127.0.0.1:8000/get-questions");
+    const data = await response.json();
+    questions.value = data["questions"];
+}
 
 const currentQuestionIndex = ref(0);
 const question = ref("");
 const answers = ref([]);
 const correctAnswerIndex = ref(0);
 const score = ref(0);
+const explanation = ref("");
 
-function startQuiz() {
+async function startQuiz() {
+    await fetchQuestions();
     getNextQuestion();
 }
 
@@ -33,11 +25,14 @@ function getNextQuestion(isAnsweredCorrectly) {
     if (isAnsweredCorrectly) {
         score.value += 1;
     }
-    if (currentQuestionIndex.value < questions.length) {
-        question.value = questions[currentQuestionIndex.value].question;
-        answers.value = questions[currentQuestionIndex.value].answers;
+    if (currentQuestionIndex.value < questions.value.length) {
+        console.log(questions.value[currentQuestionIndex.value].question);
+        question.value = questions.value[currentQuestionIndex.value].question;
+        answers.value = questions.value[currentQuestionIndex.value].answers;
         correctAnswerIndex.value =
-            questions[currentQuestionIndex.value].correctAnswer;
+            questions.value[currentQuestionIndex.value].correct_answer_index;
+        explanation.value =
+            questions.value[currentQuestionIndex.value].explanation;
         currentQuestionIndex.value += 1;
     } else {
         console.log("We reach the end");
@@ -62,6 +57,7 @@ startQuiz();
             :question
             :answers
             :correctAnswerIndex
+            :explanation
             @next="getNextQuestion"
         />
     </section>

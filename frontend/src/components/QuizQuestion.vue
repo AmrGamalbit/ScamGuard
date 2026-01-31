@@ -4,21 +4,25 @@ const props = defineProps({
     question: String,
     answers: Array,
     correctAnswerIndex: Number,
+    explanation: String,
 });
-const emit = defineEmits(["next"])
+const emit = defineEmits(["next"]);
 const answerColor = ref("");
-const selectedIndex = ref("")
-const isAnsweredCorrectly = ref(false)
+const selectedIndex = ref("");
+const isAnsweredCorrectly = ref(false);
 function checkAnswer(index) {
     if (index == props.correctAnswerIndex) {
         answerColor.value = "green";
-        isAnsweredCorrectly.value = true
+        isAnsweredCorrectly.value = true;
     } else {
         answerColor.value = "red";
-        isAnsweredCorrectly.value = false
+        isAnsweredCorrectly.value = false;
     }
-    selectedIndex.value = index
-    emit('next', isAnsweredCorrectly.value)
+    selectedIndex.value = index;
+    setTimeout(() => {
+        answerColor.value = "";
+        emit("next", isAnsweredCorrectly.value);
+    }, 500);
 }
 </script>
 
@@ -38,13 +42,18 @@ function checkAnswer(index) {
         </div>
         <ul id="question-answers">
             <li
-                :class="(selectedIndex == index) ? `question-answer ${answerColor}` : `question-answer`"
+                :class="
+                    selectedIndex == index
+                        ? `question-answer ${answerColor}`
+                        : `question-answer`
+                "
                 v-for="(answer, index) in answers"
                 @click="checkAnswer(index)"
             >
                 {{ answer }}
             </li>
         </ul>
+        <p>{{ explanation }}</p>
     </section>
 </template>
 
@@ -76,7 +85,7 @@ li {
 }
 li:hover {
     cursor: pointer;
-    filter: brightness(110%)
+    filter: brightness(110%);
 }
 .green {
     background: #49a078;
