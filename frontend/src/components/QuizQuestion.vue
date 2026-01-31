@@ -10,6 +10,11 @@ const emit = defineEmits(["next"]);
 const answerColor = ref("");
 const selectedIndex = ref("");
 const isAnsweredCorrectly = ref(false);
+const explanationText = ref("");
+
+function showExplanation() {
+    explanationText.value = props.explanation;
+}
 function checkAnswer(index) {
     if (index == props.correctAnswerIndex) {
         answerColor.value = "green";
@@ -21,7 +26,11 @@ function checkAnswer(index) {
     selectedIndex.value = index;
     setTimeout(() => {
         answerColor.value = "";
-        emit("next", isAnsweredCorrectly.value);
+        showExplanation();
+        setTimeout(() => {
+            explanationText.value = "";
+            emit("next", isAnsweredCorrectly.value);
+        }, 2000);
     }, 500);
 }
 </script>
@@ -53,7 +62,7 @@ function checkAnswer(index) {
                 {{ answer }}
             </li>
         </ul>
-        <p>{{ explanation }}</p>
+        <p id="explanation" v-if="explanationText">{{ explanationText }}</p>
     </section>
 </template>
 
@@ -93,5 +102,12 @@ li:hover {
 
 .red {
     background: #c94c4c;
+}
+
+#explanation {
+    background-color: #dbe2ef;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
 }
 </style>

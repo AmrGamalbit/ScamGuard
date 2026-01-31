@@ -15,8 +15,11 @@ const answers = ref([]);
 const correctAnswerIndex = ref(0);
 const score = ref(0);
 const explanation = ref("");
+const quizStatus = ref("notStarted");
 
 async function startQuiz() {
+    quizStatus.value = "inProgress";
+    currentQuestionIndex.value = 0;
     await fetchQuestions();
     getNextQuestion();
 }
@@ -26,7 +29,6 @@ function getNextQuestion(isAnsweredCorrectly) {
         score.value += 1;
     }
     if (currentQuestionIndex.value < questions.value.length) {
-        console.log(questions.value[currentQuestionIndex.value].question);
         question.value = questions.value[currentQuestionIndex.value].question;
         answers.value = questions.value[currentQuestionIndex.value].answers;
         correctAnswerIndex.value =
@@ -35,10 +37,13 @@ function getNextQuestion(isAnsweredCorrectly) {
             questions.value[currentQuestionIndex.value].explanation;
         currentQuestionIndex.value += 1;
     } else {
-        console.log("We reach the end");
+        displayResult();
     }
 }
-startQuiz();
+
+function displayResult() {
+    quizStatus.value = "finished";
+}
 </script>
 
 <template>
@@ -52,14 +57,38 @@ startQuiz();
         <h2>Interactive Game</h2>
         <p>Play and compete</p>
         <br />
-        <p>{{ score }}</p>
-        <QuizQuestion
-            :question
-            :answers
-            :correctAnswerIndex
-            :explanation
-            @next="getNextQuestion"
-        />
+        <div v-if="quizStatus == 'notStarted'" id="quiz-instructions">
+            <h2>Game Instructions</h2>
+            <ul>
+                <li>
+                    Read each question carefully and select the correct answer
+                    from the available options.
+                </li>
+                <li>Your score increases for every correct answer.</li>
+                <li>
+                    Try to answer all questions and see your final score at the
+                    end of the quiz.
+                </li>
+            </ul>
+            <button @click="startQuiz" class="quiz-button">Start Quiz</button>
+        </div>
+        <div v-else-if="quizStatus == 'inProgress'" id="quiz-progress">
+            <p>Your current score: {{ score }}</p>
+            <QuizQuestion
+                :question
+                :answers
+                :correctAnswerIndex
+                :explanation
+                @next="getNextQuestion"
+            />
+        </div>
+        <div v-else id="quiz-end">
+            <div id="final-score-container">
+                <h2>Finished the quiz</h2>
+                <p>Your final score: {{ score }}</p>
+            </div>
+            <button @click="startQuiz" class="quiz-button">Retry</button>
+        </div>
     </section>
 </template>
 
@@ -79,6 +108,48 @@ h2 {
     font-size: 40px;
     letter-spacing: 2px;
 }
+
+#quiz-end {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+#quiz-end h2,
+#quiz-instructions h2 {
+    font-size: 30px;
+    font-weight: 400;
+    margin-bottom: 20px;
+}
+
+.quiz-button {
+    color: #f9f7f7;
+    background-color: #112d4e;
+    font-size: 15px;
+    padding: 15px;
+    border-radius: 15px;
+    border: none;
+}
+
+.quiz-button:hover {
+    filter: brightness(110%);
+}
+
+#final-score-container {
+    background-color: #dbe2ef;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+}
+
 p {
     font-family: "Inter";
     color: #2c2c2c;
