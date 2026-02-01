@@ -64,7 +64,7 @@ div.tip-frame {
 }
 div.tip-container {
     position: absolute;
-    top: 0;
+    top: -30%;
     left: 0;
     background-color: #dbe2ef;
     padding: 10px 20px;
@@ -77,6 +77,5 @@ p {
     font-size: 35px;
     font-weight: 500;
     font-family: "League Gothic", serif;
-    margin-left: 10%;
 }
 </style>

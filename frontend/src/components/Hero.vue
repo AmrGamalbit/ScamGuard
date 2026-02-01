@@ -8,8 +8,8 @@
         rel="stylesheet"
     />
     <section>
-        <h2>Scam Protector</h2>
-        <p>Train your insects</p>
+        <h2>Scam Guard</h2>
+        <p>Learn to spot scams before they spot you</p>
     </section>
 </template>
 
